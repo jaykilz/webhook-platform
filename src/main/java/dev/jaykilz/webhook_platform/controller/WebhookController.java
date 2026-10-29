@@ -1,20 +1,31 @@
 package dev.jaykilz.webhook_platform.controller;
 
 import dev.jaykilz.webhook_platform.dto.PaymentWebhookRequest;
+import dev.jaykilz.webhook_platform.entity.WebhookEvent;
+import dev.jaykilz.webhook_platform.repository.WebhookEventRepository;
+import dev.jaykilz.webhook_platform.service.WebhookEventService;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/webhooks")
 public class WebhookController {
 
+    private final WebhookEventService service;
+
+    public WebhookController(WebhookEventService service) {
+        this.service = service;
+    }
+
     @PostMapping("/payments")
     public String receivePaymentWebhook(@RequestBody PaymentWebhookRequest request) {
 
-        System.out.println("Event ID: " + request.getEventId());
-        System.out.println("Order ID: " + request.getOrderId());
-        System.out.println("Status: " + request.getStatus());
-        System.out.println("Amount: " + request.getAmount());
+        return service.receiveEvent(request);
+    }
 
-        return "Webhook received successfully!";
+    @PostMapping("/{eventId}/process")
+    public String processEvent(@PathVariable String eventId) {
+        return service.processEvent(eventId);
     }
 }
