@@ -41,27 +41,38 @@ public class WebhookEventService {
 
     public String processEvent(String eventId) {
 
-        // Find event in database
         WebhookEvent event = repository.findByEventId(eventId)
                 .orElse(null);
 
-        // Check if event exists
         if (event == null) {
             return "Webhook event not found!";
         }
 
-        // Update status to PROCESSING
         event.setProcessingStatus("PROCESSING");
+        event.setRetryCount(event.getRetryCount() + 1);
         repository.save(event);
 
-        // Simulate processing the event
-        System.out.println("Processing event: " + eventId);
+        try {
+            // Simulate event processing
+            System.out.println("Processing event: " + eventId);
 
-        // Update status to PROCESSED
-        event.setProcessingStatus("PROCESSED");
-        repository.save(event);
+            // Simulate a processing error
+            if ("FAIL".equals(event.getStatus())) {
+                throw new RuntimeException("Simulated processing error");
+            }
 
-        return "Webhook processed successfully!";
+            event.setProcessingStatus("PROCESSED");
+            repository.save(event);
+
+            return "Webhook processed successfully!";
+
+        } catch (Exception e) {
+
+            event.setProcessingStatus("FAILED");
+            repository.save(event);
+
+            return "Webhook processing failed!";
+        }
     }
 }
 

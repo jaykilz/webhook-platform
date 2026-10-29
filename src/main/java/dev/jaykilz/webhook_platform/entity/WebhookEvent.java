@@ -25,6 +25,8 @@ public class WebhookEvent {
 
     private String processingStatus;
 
+    private int retryCount;
+
     public WebhookEvent() {
     }
 
@@ -82,5 +84,13 @@ public class WebhookEvent {
 
     public void setProcessingStatus(String processingStatus) {
         this.processingStatus = processingStatus;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(int retryCount) {
+        this.retryCount = retryCount;
     }
 }
